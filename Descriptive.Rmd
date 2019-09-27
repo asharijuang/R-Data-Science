@@ -1,0 +1,129 @@
+---
+title: "Descriptive"
+author: "ashari juang"
+date: "9/26/2019"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ggplot2)
+library(dplyr)
+
+data("diamonds")
+
+data <- diamonds
+```
+
+# EDA
+
+```{r}
+eda2 <- data %>%
+  dplyr::select(color, price)
+plot(eda2)
+```
+
+```{r}
+eda3 <- data %>%
+  dplyr::select(carat, price, cut)
+plot(eda3)
+```
+
+```{r}
+eda <- data %>%
+  dplyr::select(color, price, cut, clarity, carat)
+plot(eda)
+```
+
+## Melihat data categorical
+
+Data diamont berdasarkan cut atau pemotongan, kita akan melihat jumlah berlian berdasarkan kategori pemotongan.
+paling banyak ideal paling sedikit "Fair"
+```{r}
+ggplot(data) +
+  geom_bar(mapping = aes(data$cut))
+```
+
+
+Visualisasi data continue
+dengan boxplot untuk melihat outlier
+
+IQR
+```{r}
+ggplot(data, mapping = aes(y=data$price)) +
+  geom_boxplot()
+```
+
+
+
+# Visualisasi 1 variable
+
+## Histogram
+
+Visualisasi harga 
+Histogram basis'a frequensi
+
+menentukan bins menggunakan sequare rule, pembulatan akanr n
+ceiling(sqrt(nrow(data)))
+
+dengan rule itu kita bisa melihat anomali kekosongan data di awal.
+```{r}
+ggplot(data) +
+  geom_histogram(mapping = aes(data$price), bins = ceiling(sqrt(nrow(data))))
+```
+
+## Frequency poligon
+
+```{r}
+ggplot(data) +
+  geom_freqpoly(mapping = aes(cut), stat = "count")
+```
+
+
+# Visualisasi 2 variable
+
+## 1. 2 variabel kategorik
+Hubungan antara karat dan harga
+```{r}
+ggplot(data) +
+  geom_count(mapping = aes(data$cut, data$price))
+```
+
+```{r}
+diamonds %>%
+  count(color, cut) %>%
+  ggplot(mapping = aes(x=color,y=cut)) +
+  geom_tile(mapping = aes(fill=n))
+```
+
+# 2. 1 kontinue dan 1 kategorik
+
+```{r}
+ggplot(data, mapping = aes(cut,price)) +
+  geom_boxplot()
+```
+
+# 3. 2 variabel kontinyu
+
+
+```{r}
+price_carat <- ggplot(data) +
+  geom_point(mapping = aes(carat,price,color = cut)) 
+price_carat
+```
+
+melihat price_carat agak susah di regresi, kita bisa melakukan transformasi
+contoh dengan log
+```{r}
+ggplot(data) +
+  geom_point(mapping = aes(log(carat),log(price),color = cut)) 
+```
+
+```{r}
+ggplot(data) +
+  geom_bin2d(mapping = aes(carat,price,color = cut)) 
+```
+
